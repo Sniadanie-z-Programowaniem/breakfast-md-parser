@@ -27,12 +27,13 @@ const parseEpisodeName = (item: Tokens.DiscriminatedToken): EpisodeThread => {
         const [, type, episodeNumber, dateString] =
             item.text.match(/^\[(.*)\].*#(\d*), (.*)$/) || [];
 
-        const date = parse(dateString, 'dd.MM.yyyy', new Date());
+        const dateTime = parse(dateString, 'dd.MM.yyyy', new Date());
+        const dateOnly = new Date(dateTime.valueOf() - dateTime.getTimezoneOffset() * 60 * 1000);
 
         return {
             type: mapEpisodeType(type),
             number: +episodeNumber,
-            date,
+            date: dateOnly,
         };
     }
 
@@ -55,6 +56,8 @@ export const parseReadme = async (content: string): Promise<ReadmeModel[]> => {
     const tokens: Tokens.DiscriminatedToken[] = asTokens(await tokenize(content));
 
     const episodesList = tokens.find((t) => t.type === 'list');
+
+    console.log(tokens);
 
     if (!episodesList || episodesList?.type !== 'list') {
         logger.error('Episodes list not found', {});

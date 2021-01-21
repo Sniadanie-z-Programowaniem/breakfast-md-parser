@@ -10,5 +10,8 @@
     "rules": {
         "no-duplicate-imports": "error",
         "sort-imports": "error"
+    },
+    "env": {
+        "node": true
     }
 }
