@@ -4,3 +4,6 @@ import { Tokens } from 'marked';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
 export const asTokens = (tokens: any): Tokens.DiscriminatedToken[] => tokens;
+
+export const isListToken = (item: Tokens.DiscriminatedToken): item is Tokens.TokenList =>
+    item.type === 'list';

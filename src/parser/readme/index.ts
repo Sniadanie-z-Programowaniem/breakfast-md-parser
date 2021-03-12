@@ -1,9 +1,10 @@
+import { BreakParsingError, assertParsingCondition } from '../exceptions';
 import { Episode, EpisodeType } from '../../model/episode';
+import { asTokens, isListToken } from '../marked-types';
 
-import { BreakParsingError } from '../exceptions';
 import { EpisodeListItemModel } from './types';
 import { Tokens } from 'marked';
-import { asTokens } from '../marked-types';
+import { linkFromListItem } from '../utils';
 import { logger } from '../parser-logger';
 import { parse } from 'date-fns';
 import { tokenize } from '../tokenize';
@@ -46,25 +47,16 @@ const parseEpisodeName = (item: Tokens.DiscriminatedToken): EpisodeThread => {
 const parseEpisode = (item: Tokens.ListItem): EpisodeListItemModel => {
     const [nameToken, episodeLinksTokens] = item.tokens || [];
 
-    // todo verify shape, and fix typings
-    // todo handle episodeMdLink
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const [
-        streamLinkItem,
-        episodeFileLinkItem,
-    ] = ((episodeLinksTokens as any) as Tokens.List).items;
+    // const episodesLinksIsList = ;
+    if (!isListToken(episodeLinksTokens)) {
+        assertParsingCondition(true, 'Episodes list is not a list token');
+        throw new Error('');
+    }
 
-    const streamUrlToken: Tokens.Link | undefined = streamLinkItem.tokens
-        ?.filter((i) => 'tokens' in i)
-        .flatMap((i: any) => i.tokens)
-        .find((token) => token.type === 'link');
+    const [streamLinkItem, episodeFileLinkItem] = episodeLinksTokens.items;
 
-    const episodeFileLinkToken: Tokens.Link | undefined = episodeFileLinkItem.tokens
-        ?.filter((i) => 'tokens' in i)
-        .flatMap((i: any) => i.tokens)
-        .find((token) => token.type === 'link');
+    const streamUrlToken = linkFromListItem(streamLinkItem);
+    const episodeFileLinkToken = linkFromListItem(episodeFileLinkItem);
 
     if (!streamUrlToken) {
         throw new BreakParsingError('Stream URL not found');

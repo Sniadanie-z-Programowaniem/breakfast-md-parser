@@ -3,6 +3,7 @@ import { EpisodeModel } from './types';
 import { Host } from '../../model/host';
 import { Tokens } from 'marked';
 import { asTokens } from '../marked-types';
+import { linkFromListItem } from '../utils';
 import { logger } from '../parser-logger';
 import { tokenize } from '../tokenize';
 
@@ -13,12 +14,8 @@ const parseSocialLink = (socialLink: Tokens.Link): Host => ({
 });
 
 const parseHost = (item: Tokens.ListItem): Host => {
-    const socialLink: Tokens.Link | undefined = item.tokens
-        ?.filter((i) => 'tokens' in i)
-        .flatMap((i: any) => i.tokens)
-        .find((token) => token.type === 'link');
+    const socialLink = linkFromListItem(item);
 
-    // no sm
     if (!socialLink) {
         return {
             name: item.text?.trim(),
