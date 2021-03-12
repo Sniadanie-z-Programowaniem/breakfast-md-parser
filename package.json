@@ -4,7 +4,7 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "dev": "ts-node-dev src/index.ts",
+        "dev": "TS_NODE_FILES=true ts-node-dev src/index.ts",
         "start": "TS_NODE_FILES=true ts-node src/index.ts",
         "build": "tsc",
         "start:dist": "npm run build && node dist/index.js",
