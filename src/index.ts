@@ -2,7 +2,10 @@ import { parseBreakfastDir } from './parser';
 import path from 'path';
 
 const run = async () => {
-    parseBreakfastDir(path.join(__dirname, '..', 'test-data'));
+    parseBreakfastDir({
+        mainDirectoryPath: path.join(__dirname, '..', 'test-data'),
+        episodesDirectoryPath: path.join(__dirname, '..', 'test-data', 'episodes'),
+    });
 };
 
 run();

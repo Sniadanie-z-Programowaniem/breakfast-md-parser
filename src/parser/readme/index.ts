@@ -1,7 +1,7 @@
 import { Episode, EpisodeType } from '../../model/episode';
 
 import { BreakParsingError } from '../exceptions';
-import { ReadmeModel } from './types';
+import { EpisodeListItemModel } from './types';
 import { Tokens } from 'marked';
 import { asTokens } from '../marked-types';
 import { logger } from '../parser-logger';
@@ -43,21 +43,51 @@ const parseEpisodeName = (item: Tokens.DiscriminatedToken): EpisodeThread => {
     throw new BreakParsingError('Cannot parse episode name');
 };
 
-const parseEpisode = (item: Tokens.ListItem): EpisodeThread => {
-    // todo second element in array is linksToken - handle it
-    const [nameToken] = item.tokens || [];
+const parseEpisode = (item: Tokens.ListItem): EpisodeListItemModel => {
+    const [nameToken, episodeLinksTokens] = item.tokens || [];
 
-    return parseEpisodeName(nameToken);
+    // todo verify shape, and fix typings
+    // todo handle episodeMdLink
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const [
+        streamLinkItem,
+        episodeFileLinkItem,
+    ] = ((episodeLinksTokens as any) as Tokens.List).items;
+
+    const streamUrlToken: Tokens.Link | undefined = streamLinkItem.tokens
+        ?.filter((i) => 'tokens' in i)
+        .flatMap((i: any) => i.tokens)
+        .find((token) => token.type === 'link');
+
+    const episodeFileLinkToken: Tokens.Link | undefined = episodeFileLinkItem.tokens
+        ?.filter((i) => 'tokens' in i)
+        .flatMap((i: any) => i.tokens)
+        .find((token) => token.type === 'link');
+
+    if (!streamUrlToken) {
+        throw new BreakParsingError('Stream URL not found');
+    }
+
+    if (!episodeFileLinkToken) {
+        throw new BreakParsingError('Episode file link not found');
+    }
+
+    return {
+        ...parseEpisodeName(nameToken),
+        streamUrl: streamUrlToken.href,
+        episodeFileLink: episodeFileLinkToken.href,
+    };
 };
 
-const parseEpisodesList = (list: Tokens.TokenList): EpisodeThread[] => list.items.map(parseEpisode);
+const parseEpisodesList = (list: Tokens.TokenList): EpisodeListItemModel[] =>
+    list.items.map(parseEpisode);
 
-export const parseReadme = async (content: string): Promise<ReadmeModel[]> => {
+export const parseReadme = async (content: string): Promise<EpisodeListItemModel[]> => {
     const tokens: Tokens.DiscriminatedToken[] = asTokens(await tokenize(content));
 
     const episodesList = tokens.find((t) => t.type === 'list');
-
-    console.log(tokens);
 
     if (!episodesList || episodesList?.type !== 'list') {
         logger.error('Episodes list not found', {});

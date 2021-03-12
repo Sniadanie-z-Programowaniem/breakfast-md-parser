@@ -1,4 +1,6 @@
-import { ReadmeModel, parseReadme } from '..';
+import { EpisodeListItemModel, parseReadme } from '..';
+
+import { EpisodeType } from '../../../model/episode';
 
 describe('parse-readme', () => {
     describe('should parse', () => {
@@ -27,17 +29,42 @@ Wszystkie nagrania -->
     -   [linki](./episodes/63.md)
 -   [Back-end] Śniadanie z programowaniem #62, 27.11.2020
     -   [video](https://www.youtube.com/watch?v=XzYuiteMsOw)
-    -   [linki](./episodes/62.md    
+    -   [linki](./episodes/62.md)
 `;
 
             const actual = await parseReadme(md);
+            const expected: EpisodeListItemModel[] = [
+                {
+                    type: EpisodeType.FRONTEND,
+                    number: 65,
+                    date: new Date('2020-12-18'),
+                    streamUrl: 'https://www.youtube.com/watch?v=ZlQu4gcXmtA',
+                    episodeFileLink: './episodes/65.md',
+                },
+                {
+                    type: EpisodeType.BACKEND,
+                    number: 64,
+                    date: new Date('2020-12-11'),
+                    streamUrl: 'https://www.youtube.com/watch?v=nd-ncGlhhBY',
+                    episodeFileLink: './episodes/64.md',
+                },
+                {
+                    type: EpisodeType.FRONTEND,
+                    number: 63,
+                    date: new Date('2020-12-04'),
+                    streamUrl: 'https://www.youtube.com/watch?v=ycfmC5qZLpo',
+                    episodeFileLink: './episodes/63.md',
+                },
+                {
+                    type: EpisodeType.BACKEND,
+                    number: 62,
+                    date: new Date('2020-11-27'),
+                    streamUrl: 'https://www.youtube.com/watch?v=XzYuiteMsOw',
+                    episodeFileLink: './episodes/62.md',
+                },
+            ];
 
-            expect(actual).toEqual([
-                { type: 'FRONTEND', number: 65, date: new Date('2020-12-18') },
-                { type: 'BACKEND', number: 64, date: new Date('2020-12-11') },
-                { type: 'FRONTEND', number: 63, date: new Date('2020-12-04') },
-                { type: 'BACKEND', number: 62, date: new Date('2020-11-27') },
-            ] as ReadmeModel[]);
+            expect(actual).toEqual(expected);
         });
     });
 
@@ -67,12 +94,37 @@ Wszystkie nagrania --> [facebook JustJoinIT](https://www.facebook.com/watch/Just
 `;
 
         const actual = await parseReadme(md);
+        const expected: EpisodeListItemModel[] = [
+            {
+                type: EpisodeType.FRONTEND,
+                number: 65,
+                date: new Date('2020-12-18'),
+                streamUrl: 'https://www.youtube.com/watch?v=ZlQu4gcXmtA',
+                episodeFileLink: './episodes/65.md',
+            },
+            {
+                type: EpisodeType.BACKEND,
+                number: 64,
+                date: new Date('2020-12-11'),
+                streamUrl: 'https://www.youtube.com/watch?v=nd-ncGlhhBY',
+                episodeFileLink: './episodes/64.md',
+            },
+            {
+                type: EpisodeType.FRONTEND,
+                number: 63,
+                date: new Date('2020-12-04'),
+                streamUrl: 'https://www.youtube.com/watch?v=ycfmC5qZLpo',
+                episodeFileLink: './episodes/63.md',
+            },
+            {
+                type: EpisodeType.BACKEND,
+                number: 62,
+                date: new Date('2020-11-27'),
+                streamUrl: 'https://www.youtube.com/watch?v=XzYuiteMsOw',
+                episodeFileLink: './episodes/62.md',
+            },
+        ];
 
-        expect(actual).toEqual([
-            { type: 'FRONTEND', number: 65, date: new Date('2020-12-18') },
-            { type: 'BACKEND', number: 64, date: new Date('2020-12-11') },
-            { type: 'FRONTEND', number: 63, date: new Date('2020-12-04') },
-            { type: 'BACKEND', number: 62, date: new Date('2020-11-27') },
-        ] as ReadmeModel[]);
+        expect(actual).toEqual(expected);
     });
 });

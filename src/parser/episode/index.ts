@@ -1,0 +1,48 @@
+import { BreakParsingError } from '../exceptions';
+import { EpisodeModel } from './types';
+import { Host } from '../../model/host';
+import { Tokens } from 'marked';
+import { asTokens } from '../marked-types';
+import { logger } from '../parser-logger';
+import { tokenize } from '../tokenize';
+
+const parseSocialLink = (socialLink: Tokens.Link): Host => ({
+    name: socialLink.text.trim(),
+    twitterHandler: (socialLink.href.match(/\btwitter\.com\b/) && socialLink.href) || undefined,
+    githubHandler: (socialLink.href.match(/\bgithub\.com\b/) && socialLink.href) || undefined,
+});
+
+const parseHost = (item: Tokens.ListItem): Host => {
+    const socialLink: Tokens.Link | undefined = item.tokens
+        ?.filter((i) => 'tokens' in i)
+        .flatMap((i: any) => i.tokens)
+        .find((token) => token.type === 'link');
+
+    // no sm
+    if (!socialLink) {
+        return {
+            name: item.text?.trim(),
+        };
+    }
+
+    return parseSocialLink(socialLink);
+};
+
+const parseHosts = (hosts: Tokens.TokenList): Host[] => hosts.items.map(parseHost);
+
+export const parseEpisode = async (content: string): Promise<EpisodeModel> => {
+    const tokens: Tokens.DiscriminatedToken[] = asTokens(await tokenize(content));
+
+    // first list is always the hosts list
+    const hostsList = tokens.find((t) => t.type === 'list');
+
+    if (!hostsList || hostsList?.type !== 'list') {
+        logger.error('Episodes list not found', {});
+        throw new BreakParsingError('Episodes list not found');
+    }
+
+    return {
+        hosts: parseHosts(hostsList),
+        news: [],
+    };
+};
