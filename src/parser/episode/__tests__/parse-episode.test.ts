@@ -1,4 +1,4 @@
-import { EpisodeModel } from '../types';
+import { EpisodeToken } from '../types';
 import { parseEpisode } from '..';
 
 describe('parse-episode', () => {
@@ -37,7 +37,7 @@ Linkują:
                     name: '@cytrowski',
                     twitterHandler: 'https://twitter.com/cytrowski',
                 },
-            ] as EpisodeModel['hosts']);
+            ] as EpisodeToken['hosts']);
         });
 
         it.skip('should parse hosts with mixed twitter handlers or none', async () => {
@@ -73,7 +73,7 @@ Linkują:
                 {
                     name: 'Przemysław Kosior',
                 },
-            ] as EpisodeModel['hosts']);
+            ] as EpisodeToken['hosts']);
         });
 
         it('should parse hosts without social media handlers', async () => {
@@ -108,7 +108,7 @@ Linkują:
                 {
                     name: 'Tomasz Gański',
                 },
-            ] as EpisodeModel['hosts']);
+            ] as EpisodeToken['hosts']);
         });
     });
 
@@ -178,7 +178,7 @@ Linkują:
 
             const actual = await parseEpisode(md);
 
-            expect(actual).toEqual({} as EpisodeModel);
+            expect(actual).toEqual({} as EpisodeToken);
         });
     });
 });

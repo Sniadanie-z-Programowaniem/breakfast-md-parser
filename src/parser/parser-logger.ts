@@ -5,8 +5,8 @@ import chalk from 'chalk';
 type TokenPayload = { token?: Tokens.DiscriminatedToken; [k: string]: any };
 
 const logPayload = ({ token, ...payload }: TokenPayload): string => `
-    ${payload}
-    ${chalk.bgCyanBright('token = ', token)}
+    ${JSON.stringify(payload, null, 2)}
+    ${chalk.bgBlue('token: ')}${token}
 `;
 
 class ConsoleLogger {

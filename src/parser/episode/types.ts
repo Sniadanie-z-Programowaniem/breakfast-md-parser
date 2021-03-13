@@ -1,3 +1,12 @@
-import { Episode } from '../../model/episode';
+import { News } from '../../model/news';
 
-export type EpisodeModel = Pick<Episode, 'hosts' | 'news'>;
+export interface HostToken {
+    name: string;
+    twitterHandler?: string;
+    githubHandler?: string;
+}
+
+export interface EpisodeToken {
+    hosts: HostToken[];
+    news: News[];
+}

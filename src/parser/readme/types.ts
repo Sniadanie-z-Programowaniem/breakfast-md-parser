@@ -1,6 +1,16 @@
-import { Episode } from '../../model/episode';
+export enum EpisodeTypeToken {
+    BACKEND = 'BACKEND',
+    FRONTEND = 'FRONTEND',
+}
 
-export type EpisodeListItemModel = Pick<Episode, 'date' | 'number' | 'type'> & {
+export interface EpisodeListItemToken {
+    number: number;
+    date: Date;
+    type: EpisodeTypeToken;
     streamUrl: string;
     episodeFileLink: string;
-};
+}
+
+export interface ReadmeToken {
+    episodes: EpisodeListItemToken[];
+}

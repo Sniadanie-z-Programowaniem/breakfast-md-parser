@@ -1,29 +1,28 @@
 import { BreakParsingError, assertParsingCondition } from '../exceptions';
-import { Episode, EpisodeType } from '../../model/episode';
+import { EpisodeListItemToken, EpisodeTypeToken, ReadmeToken } from './types';
 import { asTokens, isListToken } from '../marked-types';
 
-import { EpisodeListItemModel } from './types';
 import { Tokens } from 'marked';
 import { linkFromListItem } from '../utils';
 import { logger } from '../parser-logger';
 import { parse } from 'date-fns';
 import { tokenize } from '../tokenize';
 
-type EpisodeThread = Pick<Episode, 'date' | 'number' | 'type'>;
+type EpisodeMetaToken = Pick<EpisodeListItemToken, 'date' | 'number' | 'type'>;
 
-const mapEpisodeType = (type: string): EpisodeType => {
+const mapEpisodeType = (type: string): EpisodeTypeToken => {
     switch (type) {
         case 'Front-end':
-            return EpisodeType.FRONTEND;
+            return EpisodeTypeToken.FRONTEND;
         case 'Back-end':
-            return EpisodeType.BACKEND;
+            return EpisodeTypeToken.BACKEND;
         default:
             logger.error('Unknown episode type', { type });
             throw new BreakParsingError('Unknown episode type');
     }
 };
 
-const parseEpisodeName = (item: Tokens.DiscriminatedToken): EpisodeThread => {
+const parseEpisodeName = (item: Tokens.DiscriminatedToken): EpisodeMetaToken => {
     if (item.type === 'text') {
         const [, type, episodeNumber, dateString] =
             item.text.match(/^\[(.*)\].*#(\d*), (.*)$/) || [];
@@ -44,7 +43,7 @@ const parseEpisodeName = (item: Tokens.DiscriminatedToken): EpisodeThread => {
     throw new BreakParsingError('Cannot parse episode name');
 };
 
-const parseEpisode = (item: Tokens.ListItem): EpisodeListItemModel => {
+const parseEpisode = (item: Tokens.ListItem): EpisodeListItemToken => {
     const [nameToken, episodeLinksTokens] = item.tokens || [];
 
     // const episodesLinksIsList = ;
@@ -73,10 +72,10 @@ const parseEpisode = (item: Tokens.ListItem): EpisodeListItemModel => {
     };
 };
 
-const parseEpisodesList = (list: Tokens.TokenList): EpisodeListItemModel[] =>
+const parseEpisodesList = (list: Tokens.TokenList): EpisodeListItemToken[] =>
     list.items.map(parseEpisode);
 
-export const parseReadme = async (content: string): Promise<EpisodeListItemModel[]> => {
+export const parseReadme = async (content: string): Promise<ReadmeToken> => {
     const tokens: Tokens.DiscriminatedToken[] = asTokens(await tokenize(content));
 
     const episodesList = tokens.find((t) => t.type === 'list');
@@ -86,7 +85,9 @@ export const parseReadme = async (content: string): Promise<EpisodeListItemModel
         throw new BreakParsingError('Episodes list not found');
     }
 
-    return parseEpisodesList(episodesList);
+    return {
+        episodes: parseEpisodesList(episodesList),
+    };
 };
 
 export * from './types';

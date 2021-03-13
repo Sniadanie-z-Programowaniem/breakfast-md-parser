@@ -21,9 +21,9 @@ export const parseBreakfastDir = async ({
         encoding: 'utf-8',
     });
 
-    const readmeModel = await parseReadme(readmeContent);
+    const readmeToken = await parseReadme(readmeContent);
 
-    readmeModel.forEach(async (element) => {
+    readmeToken.episodes.forEach(async (element) => {
         console.log('===', path.join(mainDirectoryPath, element.episodeFileLink));
         const episodeContent = await readEpisodeFile(mainDirectoryPath, element.episodeFileLink);
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
