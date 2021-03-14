@@ -1,7 +1,7 @@
-import { BreakParsingError, assertParsingCondition } from '../exceptions';
 import { EpisodeInfoToken, EpisodeTypeToken, ReadmeToken } from './types';
 import { asTokens, isListToken } from '../marked-types';
 
+import { BreakParsingError } from '../exceptions';
 import { Tokens } from 'marked';
 import { linkFromListItem } from '../utils';
 import { logger } from '../parser-logger';
@@ -48,8 +48,7 @@ const parseEpisode = (item: Tokens.ListItem): EpisodeInfoToken => {
 
     // const episodesLinksIsList = ;
     if (!isListToken(episodeLinksTokens)) {
-        assertParsingCondition(true, 'Episodes list is not a list token');
-        throw new Error('');
+        throw new BreakParsingError('Episodes list is not a list token');
     }
 
     const [streamLinkItem, episodeFileLinkItem] = episodeLinksTokens.items;
