@@ -44,6 +44,42 @@ Linkują:
             expect(actual.hosts).toEqual(expected);
         });
 
+        it('should parse hosts with linkedIn handlers', async () => {
+            const md = `
+# Live 27.11.2020 #Back-end
+
+Linkują:
+
+- [Marcin Kwiatkowski](https://www.linkedin.com/in/mkwiatko/?originalSubdomain=pl)
+- [Mateusz Turzyński](https://www.linkedin.com/in/mateusz-turzy%C5%84ski-67a51419a)
+- [Tomasz Gański](https://www.linkedin.com/in/tomaszganski)
+
+## Linki
+
+- Nowa wersja Spacy: Spacy 3.0
+  https://nightly.spacy.io/usage/v3
+`;
+
+            const expected: EpisodeToken['hosts'] = [
+                {
+                    name: 'Marcin Kwiatkowski',
+                    linkedInHandler: 'https://www.linkedin.com/in/mkwiatko/?originalSubdomain=pl',
+                },
+                {
+                    name: 'Mateusz Turzyński',
+                    linkedInHandler: 'https://www.linkedin.com/in/mateusz-turzy%C5%84ski-67a51419a',
+                },
+                {
+                    name: 'Tomasz Gański',
+                    linkedInHandler: 'https://www.linkedin.com/in/tomaszganski',
+                },
+            ];
+
+            const actual = await parseEpisode(md);
+
+            expect(actual.hosts).toEqual(expected);
+        });
+
         it('should parse hosts with mixed twitter handlers or none', async () => {
             const md = `
 # Live 18.12.2020 #Front-end
@@ -78,6 +114,44 @@ Linkują:
                     name: 'Przemysław Kosior',
                 },
             ] as EpisodeToken['hosts']);
+        });
+
+        it('should parse hosts with external web page', async () => {
+            const md = `
+# Live 18.12.2020 #Front-end
+
+Linkują:
+
+- [michalczukm](https://michalczukm.xyz)
+- [mmiszy](https://typeofweb.com/)
+- [cytrowski](https://www.cytrowski.com/)
+
+## Links
+
+- Virtual Event Starter Kit – Vercel Jumpstart your virtual event and scale to any size. Clone &
+  deploy with one-click to Vercel, then customize for your event.
+
+  - https://vercel.com/virtual-event-starter-kit
+
+`;
+            const expected: EpisodeToken['hosts'] = [
+                {
+                    name: 'michalczukm',
+                    webPage: 'https://michalczukm.xyz',
+                },
+                {
+                    name: 'mmiszy',
+                    webPage: 'https://typeofweb.com/',
+                },
+                {
+                    name: 'cytrowski',
+                    webPage: 'https://www.cytrowski.com/',
+                },
+            ];
+
+            const actual = await parseEpisode(md);
+
+            expect(actual.hosts).toEqual(expected);
         });
 
         it('should parse hosts without social media handlers', async () => {

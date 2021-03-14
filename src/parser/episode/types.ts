@@ -1,7 +1,12 @@
-export interface HostToken {
-    name: string;
+export interface SocialHandlerToken {
     twitterHandler?: string;
     githubHandler?: string;
+    linkedInHandler?: string;
+    webPage?: string;
+}
+
+export interface HostToken extends SocialHandlerToken {
+    name: string;
 }
 
 export interface NewsToken {
