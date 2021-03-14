@@ -48,8 +48,6 @@ const whenLinksAreSubList = (itemTokens?: Tokens.DiscriminatedToken[]): NewsToke
 };
 
 export const parseNews = (item: Tokens.ListItem): NewsToken => {
-    console.log('item', JSON.stringify(item, null, 2));
-
     const titleTextTokens = item.tokens
         ?.filter(isTextToken)
         .flatMap((textToken) => textToken.tokens)
