@@ -29,7 +29,7 @@ export const parseHost = (item: Tokens.ListItem): HostToken => {
 
     if (!socialLink) {
         return {
-            name: item.text?.trim(),
+            name: item.text.trim(),
         };
     }
 

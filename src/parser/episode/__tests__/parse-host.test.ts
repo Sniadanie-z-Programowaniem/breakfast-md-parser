@@ -4,11 +4,24 @@ import { parseHost } from '../parse-host';
 
 describe('parseHost', () => {
     it('should parse host with twitter handler', async () => {
-        const md = `-   [@michalczukm](https://twitter.com/michalczukm)`;
+        const md = `- [@michalczukm](https://twitter.com/michalczukm)`;
 
         const expected: HostToken = {
             name: '@michalczukm',
             twitterHandler: 'https://twitter.com/michalczukm',
+        };
+
+        const actual = await parseHost(await getListItemToken(md));
+
+        expect(actual).toEqual(expected);
+    });
+
+    it('should parse host with github handler', async () => {
+        const md = `- [@michalczukm](https://github.com/michalczukm)`;
+
+        const expected: HostToken = {
+            name: '@michalczukm',
+            githubHandler: 'https://github.com/michalczukm',
         };
 
         const actual = await parseHost(await getListItemToken(md));
