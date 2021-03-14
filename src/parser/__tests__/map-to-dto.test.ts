@@ -97,6 +97,9 @@ describe('map-to-dto', () => {
                         ],
                     },
                 ],
+                stream: {
+                    url: 'https://www.youtube.com/watch?v=ycfmC5qZLpo',
+                },
             };
 
             expect(actual).toEqual(expected);
@@ -186,6 +189,9 @@ describe('map-to-dto', () => {
                         ],
                     },
                 ],
+                stream: {
+                    url: 'https://www.youtube.com/watch?v=nd-ncGlhhBY',
+                },
             };
 
             expect(actual).toEqual(expected);

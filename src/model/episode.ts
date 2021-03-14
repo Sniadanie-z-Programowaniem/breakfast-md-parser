@@ -6,10 +6,15 @@ export enum EpisodeType {
     FRONTEND = 'FRONTEND',
 }
 
+export interface Stream {
+    url: string;
+}
+
 export interface Episode {
     number: number;
     date: Date;
     type: EpisodeType;
     hosts: Host[];
     news: News[];
+    stream: Stream;
 }

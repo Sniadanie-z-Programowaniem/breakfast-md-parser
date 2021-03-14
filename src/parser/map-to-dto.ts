@@ -25,5 +25,8 @@ export const mapToEpisode = (episodeToken: EpisodeToken, infoToken: EpisodeInfoT
                 url: linkToken,
             })),
         })),
+        stream: {
+            url: infoToken.streamUrl,
+        },
     };
 };
