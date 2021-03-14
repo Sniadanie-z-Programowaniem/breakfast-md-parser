@@ -1,4 +1,4 @@
-import { isDefined, linkFromListItem } from '../utils';
+import { isDefined, linkFromListItem, linksFromNestedList } from '../utils';
 import { isLinkToken, isListToken, isTextToken } from '../marked-types';
 
 import { BreakParsingError } from '../exceptions';
@@ -22,6 +22,14 @@ const parseTitleAndDescriptionToken = (
     };
 };
 
+const parseLinksFromList = (listToken: Tokens.List): NewsToken['links'] => {
+    const linksFromFlatList = listToken.items.map(linkFromListItem).filter(isDefined);
+
+    return (linksFromFlatList.length > 0 ? linksFromFlatList : linksFromNestedList(listToken)).map(
+        (link) => link.href,
+    );
+};
+
 const whenTitleContainsLink = (titleTextTokens: Tokens.DiscriminatedToken[]): NewsToken => {
     const linkToken = titleTextTokens?.find(isLinkToken);
 
@@ -36,18 +44,15 @@ const whenTitleContainsLink = (titleTextTokens: Tokens.DiscriminatedToken[]): Ne
 };
 
 const whenLinksAreSubList = (itemTokens: Tokens.DiscriminatedToken[]): NewsToken => {
-    const linksTokens = itemTokens
-        ?.find(isListToken)
-        ?.items.map(linkFromListItem)
-        .filter(isDefined);
+    const listToken = itemTokens.find(isListToken);
 
-    if (!linksTokens) {
+    if (!listToken) {
         throw new BreakParsingError('News links not found');
     }
 
     return {
         ...parseTitleAndDescriptionToken(itemTokens),
-        links: linksTokens.map((link) => link.href),
+        links: parseLinksFromList(listToken),
     };
 };
 

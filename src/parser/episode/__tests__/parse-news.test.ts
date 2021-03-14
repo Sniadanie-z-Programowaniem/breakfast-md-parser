@@ -100,7 +100,7 @@ describe('parse-news', () => {
         expect(actual).toEqual(expected);
     });
 
-    it.skip('should parse when has urls as sub-list and links have extra text', async () => {
+    it('should parse when has urls as sub-list and links have extra text', async () => {
         const md = `
 - Microsoft ogłasza dodatkowy support dla Blazora w IDE + wychodzą darmowe biblioteki komponentów open source
   Blazor nabiera tempa

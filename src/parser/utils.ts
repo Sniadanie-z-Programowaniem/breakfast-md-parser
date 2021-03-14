@@ -1,13 +1,21 @@
+import { isLinkToken, isListToken } from './marked-types';
+
 import { Tokens } from 'marked';
-import { isLinkToken } from './marked-types';
 
 export const isDefined = <T>(item: T | undefined): item is T => !!item;
 
-export const linkFromListItem = (item: Tokens.ListItem): Tokens.Link | undefined => {
-    const link = item.tokens
-        ?.flatMap((i) => i.tokens)
+export const linkFromListItem = (item: Tokens.ListItem): Tokens.Link | undefined =>
+    item.tokens
+        ?.flatMap((itemToken) => itemToken.tokens)
         .filter(isDefined)
         .find(isLinkToken);
 
-    return link;
+export const linksFromNestedList = (item: Tokens.List): Tokens.Link[] => {
+    const listItemWithLinksToken = item.items
+        .flatMap((itemToken) => itemToken.tokens)
+        .filter(isDefined)
+        .filter(isListToken)
+        .flatMap((listToken) => listToken.items);
+
+    return listItemWithLinksToken.map(linkFromListItem).filter(isDefined);
 };

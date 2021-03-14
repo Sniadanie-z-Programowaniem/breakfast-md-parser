@@ -7,7 +7,13 @@ declare module 'marked' {
         // Below we're using only limited set of tokens - to simplify our case
         export type DiscriminatedToken = (
             | Extract<
-                  Exclude<marked.Token, marked.Tokens.Def | marked.Tokens.Space | Tokens.List>,
+                  Exclude<
+                      marked.Token,
+                      | marked.Tokens.Def
+                      | marked.Tokens.Space
+                      | marked.Tokens.Tag
+                      | marked.Tokens.List
+                  >,
                   { type: string }
               >
             | marked.Tokens.Link
