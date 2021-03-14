@@ -27,7 +27,8 @@
         "fp-ts": "^2.9.5",
         "lodash": "^4.17.21",
         "marked": "^2.0.1",
-        "meow": "^9.0.0"
+        "meow": "^9.0.0",
+        "ora": "^5.3.0"
     },
     "devDependencies": {
         "@tsconfig/recommended": "^1.0.1",

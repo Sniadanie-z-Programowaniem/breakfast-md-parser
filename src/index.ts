@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import { promises as fs } from 'fs';
 import meow from 'meow';
+import ora from 'ora';
 import { parseBreakfastDir } from './parser';
 import path from 'path';
 
@@ -49,9 +50,17 @@ const outputResult = async (
 
 const run = async () => {
     const { dir, output } = cli.flags;
+
+    const spinner = ora({
+        discardStdin: true,
+        text: `Processing ${chalk.italic(dir)} dir`,
+    }).start();
+
     const result = await parseBreakfastDir({
         mainDirectoryPath: path.join(dir),
     });
+
+    spinner.stop();
 
     await outputResult(output, result);
 };
