@@ -1,5 +1,6 @@
 import { Episode } from '../model/episode';
 import { promises as fs } from 'fs';
+import { mapToEpisode } from './map-to-dto';
 import { parseEpisode } from './episode';
 import { parseReadme } from './readme';
 import path from 'path';
@@ -23,14 +24,13 @@ export const parseBreakfastDir = async ({
 
     const readmeToken = await parseReadme(readmeContent);
 
-    readmeToken.episodes.forEach(async (element) => {
-        console.log('===', path.join(mainDirectoryPath, element.episodeFileLink));
-        const episodeContent = await readEpisodeFile(mainDirectoryPath, element.episodeFileLink);
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const episodeModel = await parseEpisode(episodeContent);
-        console.log(JSON.stringify(episodeModel, null, 2));
-    });
+    const episodes = await Promise.all(
+        readmeToken.episodes.map((infoToken) =>
+            readEpisodeFile(mainDirectoryPath, infoToken.episodeFileLink)
+                .then(parseEpisode)
+                .then((episodeToken) => mapToEpisode(episodeToken, infoToken)),
+        ),
+    );
 
-    return [];
+    return episodes;
 };

@@ -1,5 +1,5 @@
 import { BreakParsingError, assertParsingCondition } from '../exceptions';
-import { EpisodeListItemToken, EpisodeTypeToken, ReadmeToken } from './types';
+import { EpisodeInfoToken, EpisodeTypeToken, ReadmeToken } from './types';
 import { asTokens, isListToken } from '../marked-types';
 
 import { Tokens } from 'marked';
@@ -8,7 +8,7 @@ import { logger } from '../parser-logger';
 import { parse } from 'date-fns';
 import { tokenize } from '../tokenize';
 
-type EpisodeMetaToken = Pick<EpisodeListItemToken, 'date' | 'number' | 'type'>;
+type EpisodeMetaToken = Pick<EpisodeInfoToken, 'date' | 'number' | 'type'>;
 
 const mapEpisodeType = (type: string): EpisodeTypeToken => {
     switch (type) {
@@ -22,7 +22,7 @@ const mapEpisodeType = (type: string): EpisodeTypeToken => {
     }
 };
 
-const parseEpisodeName = (item: Tokens.DiscriminatedToken): EpisodeMetaToken => {
+const parseEpisodeMeta = (item: Tokens.DiscriminatedToken): EpisodeMetaToken => {
     if (item.type === 'text') {
         const [, type, episodeNumber, dateString] =
             item.text.match(/^\[(.*)\].*#(\d*), (.*)$/) || [];
@@ -43,7 +43,7 @@ const parseEpisodeName = (item: Tokens.DiscriminatedToken): EpisodeMetaToken => 
     throw new BreakParsingError('Cannot parse episode name');
 };
 
-const parseEpisode = (item: Tokens.ListItem): EpisodeListItemToken => {
+const parseEpisode = (item: Tokens.ListItem): EpisodeInfoToken => {
     const [nameToken, episodeLinksTokens] = item.tokens || [];
 
     // const episodesLinksIsList = ;
@@ -66,13 +66,13 @@ const parseEpisode = (item: Tokens.ListItem): EpisodeListItemToken => {
     }
 
     return {
-        ...parseEpisodeName(nameToken),
+        ...parseEpisodeMeta(nameToken),
         streamUrl: streamUrlToken.href,
         episodeFileLink: episodeFileLinkToken.href,
     };
 };
 
-const parseEpisodesList = (list: Tokens.TokenList): EpisodeListItemToken[] =>
+const parseEpisodesList = (list: Tokens.TokenList): EpisodeInfoToken[] =>
     list.items.map(parseEpisode);
 
 export const parseReadme = async (content: string): Promise<ReadmeToken> => {

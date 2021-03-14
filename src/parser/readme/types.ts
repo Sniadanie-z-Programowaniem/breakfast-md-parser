@@ -3,7 +3,7 @@ export enum EpisodeTypeToken {
     FRONTEND = 'FRONTEND',
 }
 
-export interface EpisodeListItemToken {
+export interface EpisodeInfoToken {
     number: number;
     date: Date;
     type: EpisodeTypeToken;
@@ -12,5 +12,5 @@ export interface EpisodeListItemToken {
 }
 
 export interface ReadmeToken {
-    episodes: EpisodeListItemToken[];
+    episodes: EpisodeInfoToken[];
 }
