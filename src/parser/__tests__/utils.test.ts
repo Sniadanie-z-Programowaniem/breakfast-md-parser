@@ -97,6 +97,21 @@ describe('utils', () => {
 
             expect(actual).toBeUndefined();
         });
+
+        it('should return undefined for no tokens in given item', () => {
+            const token: Tokens.ListItem = {
+                type: 'list_item',
+                raw: '3. StackTrends',
+                task: false,
+                loose: false,
+                checked: false,
+                text: 'StackTrends',
+            };
+
+            const actual = linkFromListItem(token);
+
+            expect(actual).toBeUndefined();
+        });
     });
 
     describe('linksFromNestedList', () => {

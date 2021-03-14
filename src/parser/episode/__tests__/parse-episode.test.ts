@@ -1,5 +1,6 @@
 import { EpisodeToken, NewsToken } from '../types';
 
+import { BreakParsingError } from '../../exceptions';
 import { parseEpisode } from '..';
 
 describe('parse-episode', () => {
@@ -43,7 +44,7 @@ Linkują:
             expect(actual.hosts).toEqual(expected);
         });
 
-        it.skip('should parse hosts with mixed twitter handlers or none', async () => {
+        it('should parse hosts with mixed twitter handlers or none', async () => {
             const md = `
 # Live 18.12.2020 #Front-end
 
@@ -51,7 +52,7 @@ Linkują:
 
 -   [@michalczukm](https://twitter.com/michalczukm)
 -   [@mmiszy](https://twitter.com/mmiszy)
--   [@cytrowski](https://twitter.com/cytrowski)
+-   Przemysław Kosior
 
 ## Links
 
@@ -114,10 +115,21 @@ Linkują:
 
             expect(actual.hosts).toEqual(expected);
         });
+
+        it('should throw an exception when hosts list not found', async () => {
+            const md = `
+# Live 27.11.2020 #Back-end
+
+Linkują:
+`;
+            await expect(parseEpisode(md)).rejects.toThrowError(
+                new BreakParsingError('Hosts list not found'),
+            );
+        });
     });
 
     describe('news', () => {
-        it('should parse when news have url in description', async () => {
+        it('should parse news', async () => {
             const md = `
 # Live 27.11.2020 #Back-end
 
@@ -141,6 +153,13 @@ Linkują:
 
 - M1X
   https://thinkapple.pl/2020/11/24/nowy-imac-macbook-pro-16-z-m1-x-2021/
+
+- Nx cloud
+  Poniżej też nasza prezka gdzie wspominamy nx
+
+  - https://nx.app/
+  - https://www.youtube.com/watch?v=99ZtVKG5PzI
+  - https://nx.dev/
 `;
 
             const expected: NewsToken[] = [
@@ -170,11 +189,38 @@ Linkują:
                         'https://thinkapple.pl/2020/11/24/nowy-imac-macbook-pro-16-z-m1-x-2021/',
                     ],
                 },
+                {
+                    title: 'Nx cloud',
+                    description: 'Poniżej też nasza prezka gdzie wspominamy nx',
+                    links: [
+                        'https://nx.app/',
+                        'https://www.youtube.com/watch?v=99ZtVKG5PzI',
+                        'https://nx.dev/',
+                    ],
+                },
             ];
 
             const actual = await parseEpisode(md);
 
             expect(actual.news).toEqual(expected);
+        });
+
+        it('should throw an exception when links news not found', async () => {
+            const md = `
+# Live 27.11.2020 #Back-end
+
+Linkują:
+
+-   Marcin Kwiatkowski
+-   Mateusz Turzyński
+-   Łukasz Grzybowski
+-   Tomasz Gański
+
+## Linki
+    `;
+            await expect(parseEpisode(md)).rejects.toThrowError(
+                new BreakParsingError('News list not found'),
+            );
         });
     });
 });

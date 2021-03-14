@@ -1,10 +1,9 @@
 import { EpisodeToken, HostToken, NewsToken } from './types';
+import { asTokens, isListToken } from '../marked-types';
 
 import { BreakParsingError } from '../exceptions';
 import { Tokens } from 'marked';
-import { asTokens } from '../marked-types';
 import { linkFromListItem } from '../utils';
-import { logger } from '../parser-logger';
 import { parseNews } from './parse-news';
 import { tokenize } from '../tokenize';
 
@@ -34,15 +33,13 @@ export const parseEpisode = async (content: string): Promise<EpisodeToken> => {
     const tokens: Tokens.DiscriminatedToken[] = asTokens(await tokenize(content));
 
     // two lists are standard structure of episode file
-    const [hostsListToken, newsListToken] = tokens.filter((token) => token.type === 'list');
+    const [hostsListToken, newsListToken] = tokens.filter(isListToken);
 
-    if (!hostsListToken || hostsListToken?.type !== 'list') {
-        logger.error('Episodes list not found', {});
-        throw new BreakParsingError('Episodes list not found');
+    if (!hostsListToken) {
+        throw new BreakParsingError('Hosts list not found');
     }
 
-    if (!newsListToken || newsListToken?.type !== 'list') {
-        logger.error('News list not found', {});
+    if (!newsListToken) {
         throw new BreakParsingError('News list not found');
     }
 
