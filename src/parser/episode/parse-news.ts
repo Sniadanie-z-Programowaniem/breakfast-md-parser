@@ -4,11 +4,12 @@ import { isLinkToken, isListToken, isTextToken } from '../marked-types';
 import { BreakParsingError } from '../exceptions';
 import { NewsToken } from './types';
 import { Tokens } from 'marked';
+import findLast from 'lodash/findLast';
 
 const parseTitleAndDescriptionToken = (
     tokens: Tokens.DiscriminatedToken[],
 ): Pick<NewsToken, 'title' | 'description'> => {
-    const titleToken = tokens?.find(isTextToken);
+    const [titleToken, ...extraDescriptionTokens] = tokens?.filter(isTextToken);
 
     if (!titleToken) {
         throw new BreakParsingError('News title not found');
@@ -16,9 +17,13 @@ const parseTitleAndDescriptionToken = (
 
     const [title, ...descriptionLines] = titleToken.text.split(/\r?\n/);
 
+    const description = [...descriptionLines, ...extraDescriptionTokens.map((token) => token.text)]
+        .join('\n')
+        .trim();
+
     return {
         title,
-        description: descriptionLines.join(' '),
+        description,
     };
 };
 
@@ -30,8 +35,13 @@ const parseLinksFromList = (listToken: Tokens.List): NewsToken['links'] => {
     );
 };
 
-const whenTitleContainsLink = (titleTextTokens: Tokens.DiscriminatedToken[]): NewsToken => {
-    const linkToken = titleTextTokens?.find(isLinkToken);
+const whenTitleContainsLink = (itemTokens: Tokens.DiscriminatedToken[]): NewsToken => {
+    const titleTextTokens = itemTokens
+        .filter(isTextToken)
+        .flatMap((textToken) => textToken.tokens)
+        .filter(isDefined);
+
+    const linkToken = titleTextTokens.find(isLinkToken);
 
     if (!linkToken) {
         throw new BreakParsingError('News link not found');
@@ -44,7 +54,7 @@ const whenTitleContainsLink = (titleTextTokens: Tokens.DiscriminatedToken[]): Ne
 };
 
 const whenLinksAreSubList = (itemTokens: Tokens.DiscriminatedToken[]): NewsToken => {
-    const listToken = itemTokens.find(isListToken);
+    const listToken = findLast(itemTokens, isListToken);
 
     if (!listToken) {
         throw new BreakParsingError('News links not found');
@@ -61,14 +71,7 @@ export const parseNews = (item: Tokens.ListItem): NewsToken => {
         throw new BreakParsingError('News root item does not contain any tokens');
     }
 
-    const titleTextTokens = item.tokens
-        .filter(isTextToken)
-        .flatMap((textToken) => textToken.tokens)
-        .filter(isDefined);
+    const containsLinksList = !!findLast(item.tokens, isListToken);
 
-    if (titleTextTokens?.filter((token) => token.type !== 'text').length) {
-        return whenTitleContainsLink(titleTextTokens);
-    }
-
-    return whenLinksAreSubList(item.tokens);
+    return (containsLinksList ? whenLinksAreSubList : whenTitleContainsLink)(item.tokens);
 };
