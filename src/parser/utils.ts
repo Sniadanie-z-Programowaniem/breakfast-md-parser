@@ -1,10 +1,13 @@
 import { Tokens } from 'marked';
+import { isLinkToken } from './marked-types';
+
+export const isDefined = <T>(item: T | undefined): item is T => !!item;
 
 export const linkFromListItem = (item: Tokens.ListItem): Tokens.Link | undefined => {
     const link = item.tokens
         ?.flatMap((i) => i.tokens)
-        .filter(Boolean)
-        .find((token) => token?.type === 'link') as Tokens.Link | undefined;
+        .filter(isDefined)
+        .find(isLinkToken);
 
     return link;
 };

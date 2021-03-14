@@ -4,8 +4,12 @@ import * as marked from 'marked';
 declare module 'marked' {
     namespace Tokens {
         // `Def` type doesn't have type, so we cannot use it as discriminated union with it
+        // Below we're using only limited set of tokens - to simplify our case
         export type DiscriminatedToken = (
-            | Exclude<marked.Token, marked.Tokens.Def | Tokens.List>
+            | Extract<
+                  Exclude<marked.Token, marked.Tokens.Def | marked.Tokens.Space | Tokens.List>,
+                  { type: string }
+              >
             | marked.Tokens.Link
             | TokenList
         ) & { tokens?: DiscriminatedToken[] };

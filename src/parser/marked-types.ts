@@ -7,3 +7,9 @@ export const asTokens = (tokens: any): Tokens.DiscriminatedToken[] => tokens;
 
 export const isListToken = (item: Tokens.DiscriminatedToken): item is Tokens.TokenList =>
     item.type === 'list';
+
+export const isTextToken = (item: Tokens.DiscriminatedToken): item is Tokens.Text =>
+    item.type === 'text';
+
+export const isLinkToken = (item: Tokens.DiscriminatedToken): item is Tokens.Link =>
+    item.type === 'link';

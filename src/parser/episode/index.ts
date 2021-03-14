@@ -1,10 +1,11 @@
-import { EpisodeToken, HostToken } from './types';
+import { EpisodeToken, HostToken, NewsToken } from './types';
 
 import { BreakParsingError } from '../exceptions';
 import { Tokens } from 'marked';
 import { asTokens } from '../marked-types';
 import { linkFromListItem } from '../utils';
 import { logger } from '../parser-logger';
+import { parseNews } from './parse-news';
 import { tokenize } from '../tokenize';
 
 const parseSocialLink = (socialLink: Tokens.Link): HostToken => ({
@@ -25,21 +26,28 @@ const parseHost = (item: Tokens.ListItem): HostToken => {
     return parseSocialLink(socialLink);
 };
 
-const parseHosts = (hosts: Tokens.TokenList): HostToken[] => hosts.items.map(parseHost);
+const parseHostsList = (listToken: Tokens.TokenList): HostToken[] => listToken.items.map(parseHost);
+
+const parseNewsList = (listToken: Tokens.TokenList): NewsToken[] => listToken.items.map(parseNews);
 
 export const parseEpisode = async (content: string): Promise<EpisodeToken> => {
     const tokens: Tokens.DiscriminatedToken[] = asTokens(await tokenize(content));
 
-    // first list is always the hosts list
-    const hostsList = tokens.find((token) => token.type === 'list');
+    // two lists are standard structure of episode file
+    const [hostsListToken, newsListToken] = tokens.filter((token) => token.type === 'list');
 
-    if (!hostsList || hostsList?.type !== 'list') {
+    if (!hostsListToken || hostsListToken?.type !== 'list') {
         logger.error('Episodes list not found', {});
         throw new BreakParsingError('Episodes list not found');
     }
 
+    if (!newsListToken || newsListToken?.type !== 'list') {
+        logger.error('News list not found', {});
+        throw new BreakParsingError('News list not found');
+    }
+
     return {
-        hosts: parseHosts(hostsList),
-        news: [],
+        hosts: parseHostsList(hostsListToken),
+        news: parseNewsList(newsListToken),
     };
 };
