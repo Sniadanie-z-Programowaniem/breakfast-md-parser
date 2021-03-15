@@ -39,6 +39,58 @@ $ npm start -- --dir ../sniadanie-z-programowaniem-front-end/ --out ./dist/resul
 > 🎉 Result saved to ./dist/result.json
 ```
 
+Fragment of result JSON
+
+```json
+[
+    {
+        "date": "2021-02-26T00:00:00.000Z",
+        "number": 72,
+        "type": "FRONTEND",
+        "hosts": [
+            {
+                "name": "@michalczukm",
+                "twitterHandler": "https://twitter.com/michalczukm"
+            },
+            {
+                "name": "@mmiszy",
+                "twitterHandler": "https://twitter.com/mmiszy"
+            },
+            {
+                "name": "@cytrowski",
+                "twitterHandler": "https://twitter.com/cytrowski"
+            }
+        ],
+        "news": [
+            // ...
+            {
+                "title": "typeofweb/mostly-adequate-guide-polish",
+                "description": "Mostly adequate guide to FP (in javascript). Contribute to typeofweb/mostly-adequate-guide-polish development by creating an account on GitHub.",
+                "links": [
+                    {
+                        "url": "https://github.com/typeofweb/mostly-adequate-guide-polish/commits/master"
+                    }
+                ]
+            },
+            {
+                "title": "Interaktywny słownik CSS",
+                "description": "",
+                "links": [
+                    {
+                        "url": "http://apps.workflower.fi/vocabs/css/en"
+                    }
+                ]
+            }
+            // ...
+        ],
+        "stream": {
+            "url": "https://www.youtube.com/watch?v=IlVu4VEJQ_8"
+        }
+    }
+    // ...
+]
+```
+
 ### Help
 
 ```bash
