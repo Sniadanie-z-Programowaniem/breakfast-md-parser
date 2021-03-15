@@ -62,7 +62,6 @@ Fragment of result JSON
             }
         ],
         "news": [
-            // ...
             {
                 "title": "typeofweb/mostly-adequate-guide-polish",
                 "description": "Mostly adequate guide to FP (in javascript). Contribute to typeofweb/mostly-adequate-guide-polish development by creating an account on GitHub.",
