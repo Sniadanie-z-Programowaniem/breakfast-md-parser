@@ -47,7 +47,7 @@ const parseEpisode = (item: Tokens.ListItem): EpisodeInfoToken => {
     const [nameToken, episodeLinksTokens] = item.tokens || [];
 
     if (!isListToken(episodeLinksTokens) || episodeLinksTokens.items.length < 2) {
-        logger.error('Episodes list is not a list token', { token: item, ups: { fail: true } });
+        logger.error('Episodes list is not a list token', { token: item });
         throw new BreakParsingError('Episodes list is not a list token');
     }
 

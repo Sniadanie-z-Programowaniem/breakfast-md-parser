@@ -272,20 +272,44 @@ describe('parseNews', () => {
         });
     });
 
-    it('should parse when news has urls as sub-list and extra one in description', async () => {
-        const md = `
+    describe('news url(s) are mixed in content', () => {
+        it('should parse when news has urls as sub-list and extra one in title', async () => {
+            const md = `
 - HTTP/3 is finally happening!Last week: Cloudflare begins emailing users that H3 will be automatically enabled starting this month.Today: Chrome Stable at 25% rollout!https://t.co/jahksz05CY— fks (@FredKSchott) October 7, 2020
-  - https://twitter.com/FredKSchott/status/1313910775199612929
-`;
-        const expected: NewsToken = {
-            title:
-                'HTTP/3 is finally happening!Last week: Cloudflare begins emailing users that H3 will be automatically enabled starting this month.Today: Chrome Stable at 25% rollout!https://t.co/jahksz05CY— fks (@FredKSchott) October 7, 2020',
-            description: '',
-            links: ['https://twitter.com/FredKSchott/status/1313910775199612929'],
-        };
+    - https://twitter.com/FredKSchott/status/1313910775199612929
+    `;
+            const expected: NewsToken = {
+                title:
+                    'HTTP/3 is finally happening!Last week: Cloudflare begins emailing users that H3 will be automatically enabled starting this month.Today: Chrome Stable at 25% rollout!https://t.co/jahksz05CY— fks (@FredKSchott) October 7, 2020',
+                description: '',
+                links: ['https://twitter.com/FredKSchott/status/1313910775199612929'],
+            };
 
-        const actual = await parseNews(await getListItemToken(md));
+            const actual = await parseNews(await getListItemToken(md));
 
-        expect(actual).toEqual(expected);
+            expect(actual).toEqual(expected);
+        });
+
+        it('should parse when news has urls as sub-list and description with urls', async () => {
+            const md = `
+- React Native for windows?
+  https://microsoft.github.io/react-native-windows/
+  http://npm.anvaka.com/#/view/2d/react
+  http://npm.anvaka.com/#/view/3d/react-native
+  - https://microsoft.github.io/react-native-windows/
+    `;
+            const expected: NewsToken = {
+                title: 'React Native for windows?',
+                description:
+                    `https://microsoft.github.io/react-native-windows/\n` +
+                    `http://npm.anvaka.com/#/view/2d/react\n` +
+                    `http://npm.anvaka.com/#/view/3d/react-native`,
+                links: ['https://microsoft.github.io/react-native-windows/'],
+            };
+
+            const actual = await parseNews(await getListItemToken(md));
+
+            expect(actual).toEqual(expected);
+        });
     });
 });
