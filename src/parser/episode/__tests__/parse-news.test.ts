@@ -235,6 +235,20 @@ describe('parseNews', () => {
     });
 
     describe('news url in title', () => {
+        it('should parse when url is only in title', async () => {
+            const md = `- https://aws.amazon.com/codeguru/`;
+
+            const expected: NewsToken = {
+                title: 'https://aws.amazon.com/codeguru/',
+                description: '',
+                links: ['https://aws.amazon.com/codeguru/'],
+            };
+
+            const actual = await parseNews(await getListItemToken(md));
+
+            expect(actual).toEqual(expected);
+        });
+
         it('should parse when url is in title and as single sub-list element', async () => {
             const md = `
 - https://github.com/antfu/reactivue
