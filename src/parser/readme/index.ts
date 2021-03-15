@@ -1,10 +1,10 @@
 import { EpisodeInfoToken, EpisodeTypeToken, ReadmeToken } from './types';
-import { asTokens, isListToken } from '../marked-types';
+import { asTokens, isListToken, isTextToken } from '../marked-types';
 
 import { BreakParsingError } from '../exceptions';
 import { Tokens } from 'marked';
 import { linkFromListItem } from '../utils';
-import { logger } from '../parser-logger';
+import { logger } from '@bf-md/common';
 import { parse } from 'date-fns';
 import { tokenize } from '../tokenize';
 
@@ -23,7 +23,7 @@ const mapEpisodeType = (type: string): EpisodeTypeToken => {
 };
 
 const parseEpisodeMeta = (item: Tokens.DiscriminatedToken): EpisodeMetaToken => {
-    if (item.type === 'text') {
+    if (isTextToken(item)) {
         const [, type, episodeNumber, dateString] =
             item.text.match(/^\[(.*)\].*#(\d*), (.*)$/) || [];
 
@@ -37,17 +37,17 @@ const parseEpisodeMeta = (item: Tokens.DiscriminatedToken): EpisodeMetaToken => 
         };
     }
 
-    logger.error('Episode token is not text one', { token: item });
+    logger.error('Episode title token is not text token', { token: item });
 
     // todo switch to rolling Result object than errors
-    throw new BreakParsingError('Cannot parse episode name');
+    throw new BreakParsingError('Episode title token is not text token');
 };
 
 const parseEpisode = (item: Tokens.ListItem): EpisodeInfoToken => {
     const [nameToken, episodeLinksTokens] = item.tokens || [];
 
-    // const episodesLinksIsList = ;
-    if (!isListToken(episodeLinksTokens)) {
+    if (!isListToken(episodeLinksTokens) || episodeLinksTokens.items.length < 2) {
+        logger.error('Episodes list is not a list token', { token: item, ups: { fail: true } });
         throw new BreakParsingError('Episodes list is not a list token');
     }
 
@@ -57,10 +57,12 @@ const parseEpisode = (item: Tokens.ListItem): EpisodeInfoToken => {
     const episodeFileLinkToken = linkFromListItem(episodeFileLinkItem);
 
     if (!streamUrlToken) {
+        logger.error('Stream URL not found', { token: item });
         throw new BreakParsingError('Stream URL not found');
     }
 
     if (!episodeFileLinkToken) {
+        logger.error('Episode file link not found', { token: item });
         throw new BreakParsingError('Episode file link not found');
     }
 
@@ -77,10 +79,10 @@ const parseEpisodesList = (list: Tokens.TokenList): EpisodeInfoToken[] =>
 export const parseReadme = async (content: string): Promise<ReadmeToken> => {
     const tokens: Tokens.DiscriminatedToken[] = asTokens(await tokenize(content));
 
-    const episodesList = tokens.find((t) => t.type === 'list');
+    const episodesList = tokens.find(isListToken);
 
-    if (!episodesList || episodesList?.type !== 'list') {
-        logger.error('Episodes list not found', {});
+    if (!episodesList) {
+        logger.error('Episodes list not found', { token: tokens });
         throw new BreakParsingError('Episodes list not found');
     }
 
