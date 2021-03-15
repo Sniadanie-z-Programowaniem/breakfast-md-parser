@@ -13,10 +13,10 @@ const cli = meow(
 
     Options
       --dir, -d Path to directory containing .md files
-      --output, -o Path to file where result JSON will be saved
+      --out, -o Path to file where result JSON will be saved
     
     Examples
-      $ breakfast-md --dir ../path-to-sniadanie-links-dir --output result.json
+      $ breakfast-md --dir ../path-to-sniadanie-links-dir --out result.json
 `,
     {
         flags: {
@@ -26,7 +26,7 @@ const cli = meow(
                 isRequired: true,
                 description: 'Path to directory containing .md files',
             },
-            output: {
+            out: {
                 type: 'string',
                 alias: 'o',
                 isRequired: false,
@@ -55,7 +55,7 @@ const outputResult = async (
 };
 
 const run = async () => {
-    const { dir, output } = cli.flags;
+    const { dir, out } = cli.flags;
 
     const spinner = ora({
         discardStdin: true,
@@ -68,7 +68,7 @@ const run = async () => {
         });
 
         spinner.stop();
-        await outputResult(output, result);
+        await outputResult(out, result);
     } catch (error) {
         logger.error('Run failed 😢', {}, error);
     } finally {

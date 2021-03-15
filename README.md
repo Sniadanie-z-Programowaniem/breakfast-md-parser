@@ -1,6 +1,6 @@
 # ☕️ breakfast-md parser
 
-Here lives markdown parser for files containing data from
+Markdown parser for files containing data from
 ["Śniadanie z Programowaniem"](https://justjoin.it/sniadanie-z-programowaniem) episodes. It aims to
 work only with **this particular** schema of .md files.
 
@@ -24,7 +24,7 @@ npm start -- --dir ../path-to-sniadanie-links-dir
 ### Save to file
 
 ```bash
-npm start -- --dir ../path-to-sniadanie-links-dir --output result.json
+npm start -- --dir ../path-to-sniadanie-links-dir --out result.json
 ```
 
 ### Help
