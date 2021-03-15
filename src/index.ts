@@ -32,8 +32,13 @@ const cli = meow(
                 isRequired: false,
                 desctiption: 'Path to file where result JSON will be saved',
             },
+            help: {
+                type: 'boolean',
+                isRequired: false,
+            },
         },
         autoVersion: true,
+        allowUnknownFlags: false,
     },
 );
 
