@@ -103,6 +103,22 @@ like to change.
 
 Please make sure to update tests as appropriate.
 
+### Prepare
+
+```bash
+npm ci
+```
+
+Will also setup git hooks.
+
+### Tests
+
+Run them via:
+
+```bash
+npm run test
+```
+
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
