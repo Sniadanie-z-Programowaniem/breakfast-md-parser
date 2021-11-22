@@ -1,3 +1,4 @@
+import { Episode } from 'model/episode';
 import chalk from 'chalk';
 import { promises as fs } from 'fs';
 import { logger } from '@bf-md/common';
@@ -42,10 +43,7 @@ const cli = meow(
     },
 );
 
-const outputResult = async (
-    output: string | undefined,
-    result: import('/Users/mmichalczuk/workspaces/github/breakfast-md-parser/src/model/episode').Episode[],
-): Promise<void> => {
+const outputResult = async (output: string | undefined, result: Episode[]): Promise<void> => {
     if (!output) {
         console.log(chalk.underline.bold('🎉 Your result'), '\n', JSON.stringify(result, null, 2));
     } else {
